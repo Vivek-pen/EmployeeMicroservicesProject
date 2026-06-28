@@ -1,5 +1,6 @@
 package com.employee.controller;
 
+import com.employee.exception.MissingParameterException;
 import com.employee.model.dto.EmployeeDto;
 import com.employee.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
@@ -7,7 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/employees")
@@ -46,5 +49,20 @@ public class EmployeeController {
         return new ResponseEntity<>("Employee Deleted Successfully",HttpStatus.OK);
     }
 
-
+    @GetMapping("get-by-emp-code-and-company-name")
+    public ResponseEntity<EmployeeDto> getEmployeeByEmpCodeAndCompanyName(@RequestParam(required = false) String empCode, @RequestParam(required = false) String companyName){
+        List<String> missingParameters = new ArrayList<>();
+        if(empCode == null || empCode.trim().isEmpty()){
+            missingParameters.add("empCode");
+        }
+        if(companyName==null||companyName.trim().isEmpty()){
+            missingParameters.add("companyName");
+        }
+        if(!missingParameters.isEmpty()){
+            String finalMessage = missingParameters.stream().collect(Collectors.joining(","));
+            throw new MissingParameterException("Please provide: "+finalMessage);
+        }
+        EmployeeDto response = employeeService.getEmployeeByEmpCodeAndComapnyName(empCode,companyName);
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
 }
