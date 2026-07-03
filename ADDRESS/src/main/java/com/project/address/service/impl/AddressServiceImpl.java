@@ -39,7 +39,8 @@ public class AddressServiceImpl implements AddressService {
     public AddressDto updateAddress(Long addressId, Long empId, AddressRequestDto addressRequestDto) {
         Address existingAddress = addressRepository.findById(addressId)
             .orElseThrow(() -> new ResourceNotFoundException("Address not found with id: " + addressId));
-        
+
+        //TODO: check if Employee Exists
         // Verify that the address belongs to the given employee
         if (!existingAddress.getEmpId().equals(empId)) {
             throw new ResourceNotFoundException("Address with id " + addressId + " does not belong to employee id " + empId);
